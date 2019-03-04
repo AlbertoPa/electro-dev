@@ -1,0 +1,3 @@
+electrostaticDiffusion.C
+
+EXE = $(FOAM_APPBIN)/electroDev

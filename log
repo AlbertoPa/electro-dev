@@ -1,0 +1,6 @@
+Allwmake applications/solvers/multiphase/reactingEulerFoam/electrostaticDiffusionNoEnskog
+wmake twoPhaseSystem
+wmake twoPhaseCompressibleTurbulenceModels
+wmake electrostaticModel
+Making dependency list for source file electrostaticModel.C
+g++ -std=c++11 -m64 -Dlinux64 -DWM_ARCH_OPTION=64 -DWM_DP -DWM_LABEL_SIZE=32 -Wall -Wextra -Wold-style-cast -Wnon-virtual-dtor -Wno-unused-parameter -Wno-invalid-offsetof -Wno-attributes -O3  -DNoRepository -ftemplate-depth-100 -I/home/manjil/OpenFOAM/OpenFOAM-dev/src/finiteVolume/lnInclude -I/home/manjil/OpenFOAM/OpenFOAM-dev/src/meshTools/lnInclude -I../twoPhaseSystem/lnInclude -I../../phaseSystems/lnInclude -I/home/manjil/OpenFOAM/OpenFOAM-dev/src/thermophysicalModels/basic/lnInclude -I/home/manjil/OpenFOAM/OpenFOAM-dev/src/transportModels/compressible/lnInclude -IlnInclude -I. -I/home/manjil/OpenFOAM/OpenFOAM-dev/src/OpenFOAM/lnInclude -I/home/manjil/OpenFOAM/OpenFOAM-dev/src/OSspecific/POSIX/lnInclude   -fPIC -c electrostaticModel/electrostaticModel.C -o /home/manjil/OpenFOAM/OpenFOAM-dev/platforms/linux64GccDPInt32Opt/applications/solvers/multiphase/reactingEulerFoam/electrostaticDiffusionNoEnskog/electrostaticModel/electrostaticModel/electrostaticModel.o
