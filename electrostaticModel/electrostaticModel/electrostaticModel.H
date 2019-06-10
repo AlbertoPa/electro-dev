@@ -137,26 +137,14 @@ class electrostaticModel
         //- Electric field
         volVectorField Eq_;
 
-        //- Charge flux
-        volVectorField q_flux_;
-
-        //- Charge flux without gradient of rhoq
-        volVectorField q_flux_no_rhoq;
-
         // Diffusivity of charge
         volScalarField diffusivity;
 
+        // Diffusivity of charge due to electric field
+        volScalarField fieldDiffusivity;
+
         //- Charge density
         volScalarField rhoq_;
-
-        //- Variance of charge density
-        volScalarField varRhoq_;
-
-        //- <c'q>
-        volVectorField cq_;
-
-        //- Correlation coefficient
-        volScalarField rhoPearson_;
 
         //- Electrostatic force acting on the particle phase
         volVectorField Fq_;

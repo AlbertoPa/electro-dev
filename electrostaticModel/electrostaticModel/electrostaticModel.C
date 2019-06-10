@@ -177,34 +177,6 @@ Foam::electrostaticModel::electrostaticModel
 
     ),
 
-    q_flux_
-    (
-        IOobject
-        (
-            "Qflux",
-            alpha_.time().timeName(),
-            alpha_.mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        alpha_.mesh(),
-        dimensionedVector("dimqflux", dimensionSet(1,-5,0,0,0,1,0), Zero)
-    ),
-
-    q_flux_no_rhoq
-    (
-        IOobject
-        (
-            "QNoRhoq",
-            alpha_.time().timeName(),
-            alpha_.mesh(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        alpha_.mesh(),
-        dimensionedVector("dimqflux", dimensionSet(1,-5,0,0,0,1,0), Zero)
-    ),
-
     diffusivity
     (
         IOobject
@@ -219,6 +191,20 @@ Foam::electrostaticModel::electrostaticModel
         dimensionedScalar("dimRhoqDiffusivity", dimensionSet(1,-1,-1,0,0,0,0), Zero)
     ),
 
+    fieldDiffusivity
+    (
+        IOobject
+        (
+            "FieldDiffusivity",
+            alpha_.time().timeName(),
+            alpha_.mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        alpha_.mesh(),
+        dimensionedScalar("dimFieldDiffusivity", dimensionSet(0,-6,3,0,0,2,0), Zero)
+    ),
+
     rhoq_
     (
         IOobject
@@ -230,48 +216,6 @@ Foam::electrostaticModel::electrostaticModel
             IOobject::AUTO_WRITE
         ),
         alpha_.mesh()
-    ),
-
-    varRhoq_
-    (
-        IOobject
-        (
-            "varRhoq",
-            alpha_.time().timeName(),
-            alpha_.mesh(),
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        alpha_.mesh(),
-        dimensionedScalar("dimVarRhoq", dimensionSet(0,-6,2,0,0,2,0), Zero)
-    ),
-
-    cq_
-    (
-        IOobject
-        (
-            "CQ",
-            alpha_.time().timeName(),
-            alpha_.mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        alpha_.mesh(),
-        dimensionedVector("dimCQ", dimensionSet(0,-2,0,0,0,1,0), Zero)
-    ),
-
-    rhoPearson_
-    (
-        IOobject
-        (
-            "PearsonCorrelation",
-            alpha_.time().timeName(),
-            alpha_.mesh(),
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
-        alpha_.mesh(),
-        dimensionedScalar("zero", dimless, 1.0)
     ),
 
     Fq_
@@ -402,150 +346,31 @@ void Foam::electrostaticModel::correct()
         pow(theta,(2.0/5.0))
     );
 
-    volScalarField thetaPow1_3
+    volScalarField cqVq
     (
-        pow(theta,(13.0/10.0))
-    );
-
-    volScalarField thetaPow0_8
-    (
-        pow(theta,(4.0/5.0))
-    );
-
-    volScalarField cq_A
-    (
-        "cq_A",
-        ((1.0+e_)*pow(constant::mathematical::pi*theta,0.5))
-        +(pow(2.0,(14.0/5.0))*tgamma(12.0/5.0)
-        *pow(constant::mathematical::pi,0.5)*cq_k1
-        *thetaPow0_9*(5.0/7.0 - (5.0*(1.0+e_)/12.0)))
-    );
-
-    volScalarField cq1
-    (
-        "cq1",
-        (1.0/cq_A)*pow(2.0,(19.0/5.0))*tgamma(29.0/10.0)*
-        pow(constant::mathematical::pi,0.5)*cq_k2*theta*
-        thetaPow0_4*((5.0/57.0)-(23*(1.0+e_)/264.0))
-    );
-
-    volScalarField cq2
-    (
-        "cq2",
-        (1.0/cq_A)*5.0/108.0*pow(2.0,14.0/5.0)*tgamma(12.0/5.0)
-        *particleDiameter_*pow(constant::mathematical::pi,0.5)*cq_k2
-        *thetaPow0_9*alpha/mixtureEffPermittivity
-    );
-
-    volScalarField cq3
-    (
-        "cq3",
-        (1.0/cq_A)*
-        (((constant::mathematical::pi*particleDiameter_)/(g0*6.0*alpha))
-         +(0.5*(1.0+e_)*particleDiameter_))*theta
-    );
-
-    // MR (10/17/2018) - Updated cq4,5,6 to correct missing alpha
-    volScalarField cq4
-    (
-        "cq4",
-        g0*(60.0/19.0)*pow(2.0, 9.0/5.0)*tgamma(19.0/10.0)*
-        (1.0/pow(constant::mathematical::pi,0.5))
-        *cq_k1*thetaPow0_4*alpha_
-    );
-
-    volScalarField cq5
-    (
-        "cq5",
+        "cqVq",
         g0*(5.0/9.0)*pow(2.0, 9.0/5.0)*tgamma(12.0/5.0)*
         (1.0/pow(constant::mathematical::pi,0.5))*cq_k2*
         thetaPow0_9*alpha_
     );
 
-    volScalarField cq6
+    volScalarField cqq
     (
-        "cq6",
+        "cqq",
         g0*(5.0/21.0)*pow(2.0, 9.0/5.0)*tgamma(12.0/5.0)*
         (1.0/pow(constant::mathematical::pi,0.5))*cq_k1*
         thetaPow0_9*alpha_*
         particleDiameter_
     );
 
-    volScalarField cq7
-    (
-        (1.0/cq_A)*
-        ((constant::mathematical::pi*particleDiameter_)/
-        (g0*6.0*alpha))*(rhoq_*rhoq_/particleDensity_)
-    );
-
-    volScalarField cq_g
-    (
-        "cq_g",
-        (1.0/cq_A)*
-        ((constant::mathematical::pi*particleDiameter_)/
-        (g0*6.0*alpha))
-    );
-
-    volScalarField qq_A
-    (
-        "qq_A",
-        g0*alpha*alpha*rho_*(1.0/particleDiameter_)*cq_k1*
-        (cq_k1*(5.0/3.0)*(1.0/pow(constant::mathematical::pi,0.5))
-        *pow(2.0,(28.0/5.0))*tgamma(14.0/5.0)*thetaPow1_3
-        - (15.0/7.0)*(1.0/pow(constant::mathematical::pi,0.5))
-        *pow(2.0,(24.0/5.0))*tgamma(12.0/5.0)*thetaPow0_9)
-    );
-
-    volScalarField qq_B
-    (
-        "qq_B",
-        g0*alpha*alpha*rho_*cq_k2*cq_k2*(1.0/particleDiameter_)
-        *(39.0/35.0)*(1.0/pow(constant::mathematical::pi,0.5))
-        *pow(2.0,(18.0/5.0))*tgamma(14.0/5.0)*thetaPow1_3
-    );
-
-    volScalarField qq_C
-    (
-        "qq_C",
-        g0*alpha*alpha*rho_*(1.0/particleDiameter_)*cq_k2*(cq_k1
-        *(15.0/23.0)*(1.0/pow(constant::mathematical::pi,0.5))
-        *pow(2.0,(28.0/5.0))*tgamma(23.0/10.0)*thetaPow0_8
-        - (15.0/19.0)*(1.0/pow(constant::mathematical::pi,0.5))
-        *pow(2.0,(24.0/5.0))*tgamma(19.0/5.0)*thetaPow0_4)
-    );
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    // Compute self diffusion flux
-    cq_ = - (cq1+cq7)*Eq_
-          - cq3*fvc::grad(rhoq_)
-          + cq_g*rhoq_*g_;
-
-    // Compute variance of charge
-    varRhoq_ = (-1.0/qq_A)*(qq_B*(magSqr(Eq_)) + qq_C*(Eq_ & cq_));
-
-    // Setting minimum non-zero value for variance
-    dimensionedScalar varRhoqMin
-    (
-        "varRhoqMin",dimensionSet(0,-6,2,0,0,2,0),scalar(1.0e-4)
-    );
-
-    varRhoq_ = max(varRhoq_, 0.0*varRhoqMin);
-
-    volScalarField varRhoq
-    (
-        max(varRhoqMin, varRhoq_)
-    );
-
-    // Compute flux of charge without contribution of gradient of rhoq
-    q_flux_no_rhoq =
-            (fvc::reconstruct(alphaRhoPhi_))*rhoq_
-            + (alpha_*rho_*(cq_g+(cq_g*cq4)))*rhoq_*g_
-            - (alpha_*rho_*(-cq1-(cq1*cq4)+cq5+cq7+(cq7*cq4)))*fvc::grad(Vq_)
-            + (alpha_*rho_*cq6*(rhoq_/varRhoq)*fvc::grad(varRhoq_));
-
     // Compute diffusivity of rhoq alone
-    diffusivity = alpha_*rho_*((cq3+(cq3*cq4))+cq6);
+    diffusivity = alpha_*rho_*cqq;
+
+    // Compute diffusivity due to electric field
+    fieldDiffusivity = alpha_*rho_*cqVq;
 
     // Solve for charge density
     fvScalarMatrix rhoqEqn
@@ -556,18 +381,16 @@ void Foam::electrostaticModel::correct()
         fvm::ddt(alpha*rho_, rhoq_)
       + rho_*rhoq_*fvc::ddt(alpha_)
       + fvm::div(alphaRhoPhi_, rhoq_, "div(" + alphaRhoPhi_.name() + ",rhoq)")
-      + (g_ & fvc::grad(alpha_*rho_*(cq_g+(cq_g*cq4))*rhoq_))
-      - fvc::laplacian(alpha_*rho_*(-cq1-(cq1*cq4)+cq5+cq7+(cq7*cq4)), Vq_)
-      - fvm::laplacian(alpha*rho_*((cq3+(cq3*cq4))+cq6),rhoq_)
-      + fvc::laplacian(alpha*rho_*cq6*rhoq_/varRhoq, varRhoq_)
+      - fvc::laplacian(alpha_*rho_*cqVq, Vq_)
+      - fvm::laplacian(alpha_*rho_*cqq,rhoq_)
       - fvm::Sp(phase_.continuityError(), rhoq_)
     );
 
     rhoqEqn.relax();
     rhoqEqn.solve();
 
-    Info << "Charge: min = " << min(rhoq_).value()
-         << " - max = " << max(rhoq_).value()
+    Info << "Charge: min = " << min(rhoq_*alpha_/alpha).value()
+         << " - max = " << max(rhoq_*alpha_/alpha).value()
          << " - average = " << sum(alpha_*rhoq_).value()/sum(alpha_).value()
          << endl;
 

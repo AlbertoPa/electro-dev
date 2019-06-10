@@ -239,15 +239,14 @@ void Foam::chargeGenerationWallFvPatchScalarField::updateCoeffs()
         patch.lookupPatchField<volVectorField, vector>("Eq")
     );
 
-    // Charge flux at the wall boundary
-    const fvPatchVectorField& qfluxNoRhoqPatchField
-    (
-        patch.lookupPatchField<volVectorField, vector>("QNoRhoq")
-    );
-
     const fvPatchScalarField& diffusivityPatchField
     (
         patch.lookupPatchField<volScalarField, scalar>("RhoqDiffusivity")
+    );
+
+    const fvPatchScalarField& fieldDiffusivityPatchField
+    (
+        patch.lookupPatchField<volScalarField, scalar>("FieldDiffusivity")
     );
 
     // Radial distribution function at the wall boundary
@@ -277,25 +276,22 @@ void Foam::chargeGenerationWallFvPatchScalarField::updateCoeffs()
         diffusivityPatchField*patch.deltaCoeffs()
     );
 
+    scalarField cField
+    (
+        fieldDiffusivityPatchField
+    );
+
     // Effect of electric field on wall charge BC
     scalarField EqWallNormal
     (
         (EqsPatchField & patch.Sf())/patch.magSf()
     );
 
-    // Effect of charge flux on wall charge BC
-    scalarField qfluxWallNormal
-    (
-        (qfluxNoRhoqPatchField & patch.Sf())/patch.magSf()/Kw1
-    );
-
     // Compute particle charge at wall boundary
     scalarField qWall
     (
-        ((Kw1*saturatedRhoq_.value())+(Kw2*EqWallNormal)+(qfluxWallNormal)-(cRhoq*rhoqCell))/(Kw1 - cRhoq)
+        ((Kw1*saturatedRhoq_.value())+(Kw2*EqWallNormal)+(cField*EqWallNormal)-(cRhoq*rhoqCell))/(Kw1 - cRhoq)
     );
-
-    qWall = min(max(qWall,saturatedRhoq_.value()),0.0);
 
     operator==(qWall);
 
