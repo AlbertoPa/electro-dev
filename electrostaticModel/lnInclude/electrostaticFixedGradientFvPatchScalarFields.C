@@ -1,1 +1,0 @@
-../electrostaticFixedGradient/EXTRA/electrostaticFixedGradientFvPatchScalarFields.C

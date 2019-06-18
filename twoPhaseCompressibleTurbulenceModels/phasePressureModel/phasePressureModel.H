@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2013-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2019 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -102,11 +102,11 @@ class phasePressureModel
         void correctNut()
         {}
 
-        //- Disallow default bitwise copy construct
-        phasePressureModel(const phasePressureModel&);
+        //- Disallow default bitwise copy construction
+        phasePressureModel(const phasePressureModel&) = delete;
 
         //- Disallow default bitwise assignment
-        void operator=(const phasePressureModel&);
+        void operator=(const phasePressureModel&) = delete;
 
 
 public:

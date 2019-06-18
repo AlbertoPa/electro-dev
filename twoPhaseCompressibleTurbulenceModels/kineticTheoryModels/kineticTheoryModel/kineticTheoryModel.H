@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2019 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -29,10 +29,10 @@ Description
 
     Reference:
     \verbatim
-        "Derivation, implementation, and validation of computer simulation
-         models for gas-solid fluidized beds",
-        van Wachem, B.G.M.,
-        Ph.D. Thesis, Delft University of Technology, Amsterdam, 2000.
+        van Wachem, B. G. M. (2000).
+        Derivation, implementation, and validation of computer simulation models
+        for gas-solid fluidized beds.
+        PhD Thesis, TU Delft.
     \endverbatim
 
     There are no default model coefficients.
@@ -147,11 +147,11 @@ class kineticTheoryModel
         void correctNut()
         {}
 
-        //- Disallow default bitwise copy construct
-        kineticTheoryModel(const kineticTheoryModel&);
+        //- Disallow default bitwise copy construction
+        kineticTheoryModel(const kineticTheoryModel&) = delete;
 
         //- Disallow default bitwise assignment
-        void operator=(const kineticTheoryModel&);
+        void operator=(const kineticTheoryModel&) = delete;
 
 
 public:

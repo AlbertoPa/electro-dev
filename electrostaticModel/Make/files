@@ -6,6 +6,5 @@ mixturePermittivityModel/Looyenga/LooyengaPermittivity.C
 mixturePermittivityModel/Kraszewski/KraszewskiPermittivity.C
 
 chargeGenerationWall/chargeGenerationWallFvPatchScalarField.C
-electrostaticFixedGradient/electrostaticFixedGradientFvPatchScalarField.C
 
 LIB = $(FOAM_LIBBIN)/libEulerianElectrostaticModel

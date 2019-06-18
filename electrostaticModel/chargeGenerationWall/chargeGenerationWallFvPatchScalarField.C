@@ -302,8 +302,7 @@ void Foam::chargeGenerationWallFvPatchScalarField::updateCoeffs()
 void Foam::chargeGenerationWallFvPatchScalarField::write(Ostream& os) const
 {
     fixedValueFvPatchScalarField::write(os);
-
-    this->writeEntry("value", os);
+    writeEntry(os, "value", *this);
 }
 
 
