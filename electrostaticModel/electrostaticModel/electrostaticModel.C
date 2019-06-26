@@ -363,11 +363,19 @@ void Foam::electrostaticModel::correct()
         particleDiameter_
     );
 
+    // MR (06/24/2019) - Added self diffusion term from new derivation of (c'q')
+    volScalarField csq
+    (
+        "csq",
+        (2.0/15.0)*pow((constant::mathematical::pi)*theta,0.5)*
+        particleDiameter_
+    );
+
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
     // Compute diffusivity of rhoq alone
-    diffusivity = alpha_*rho_*cqq;
+    diffusivity = alpha_*rho_*(cqq+csq);
 
     // Compute diffusivity due to electric field
     fieldDiffusivity = alpha_*rho_*cqVq;
@@ -382,7 +390,7 @@ void Foam::electrostaticModel::correct()
       + rho_*rhoq_*fvc::ddt(alpha_)
       + fvm::div(alphaRhoPhi_, rhoq_, "div(" + alphaRhoPhi_.name() + ",rhoq)")
       - fvc::laplacian(alpha_*rho_*cqVq, Vq_)
-      - fvm::laplacian(alpha_*rho_*cqq,rhoq_)
+      - fvm::laplacian(alpha_*rho_*(cqq+csq),rhoq_)
       - fvm::Sp(phase_.continuityError(), rhoq_)
     );
 
